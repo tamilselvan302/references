@@ -32,19 +32,17 @@ typeVariables = fromTraversal typeVariables'
 -- | Reference all type variables not binded by a forall
 freeTypeVariables :: Simple Traversal Type Type
 freeTypeVariables = fromTraversal (freeTypeVariables' [])
-  where freeTypeVariables' bn f (ForallT vars ctx t) 
-          = ForallT vars ctx <$> freeTypeVariables' (bn ++ (vars ^? traversal&typeVarName)) f t
+  where freeTypeVariables' bn f (ForallVisT vars t) 
+          = ForallVisT vars <$> freeTypeVariables' (bn ++ (vars ^? traversal&typeVarName)) f t
         freeTypeVariables' bn f (AppT t1 t2) = AppT <$> freeTypeVariables' bn f t1 <*> freeTypeVariables' bn f t2
         freeTypeVariables' bn f (SigT t k) = SigT <$> freeTypeVariables' bn f t <*> pure k
         freeTypeVariables' bn f tv@(VarT n) = if n `elem` bn then pure tv else f tv
         freeTypeVariables' bn _ t = pure t
  
 -- | Reference the name of the type variable inside a type variable binder
-typeVarName :: Simple Lens TyVarBndr Name
-typeVarName = lens (\case PlainTV n -> n; KindedTV n _ -> n) 
-                   (\n' -> \case PlainTV _ -> PlainTV n'; KindedTV _ k -> KindedTV n' k)
-
-
+typeVarName :: Simple Lens (TyVarBndr ()) Name
+typeVarName = lens (\case PlainTV n _ -> n; KindedTV n _ k -> n) 
+                   (\n' -> \case PlainTV _ s -> PlainTV n' s; KindedTV _ s k' -> KindedTV n' s k')
                    
 -- | Reference the characters of the name.
 -- If changed there is no guarantee that the created name will be unique.
@@ -115,7 +113,7 @@ definedConstructors
         createConOrNewtype c n tv k cons d = DataD c n tv k cons d
         
 -- | Accesses the type variables of a definition
-definedTypeArgs :: Simple Partial Dec [TyVarBndr]
+definedTypeArgs :: Simple Partial Dec [TyVarBndr ()]
 definedTypeArgs
   = partial (\case DataD c n tv k con d     -> Right (tv, \tv' -> DataD c n tv' k con d) 
                    NewtypeD c n tv k con d  -> Right (tv, \tv' -> NewtypeD c n tv' k con d) 
