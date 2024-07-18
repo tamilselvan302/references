@@ -132,8 +132,8 @@ createPartialLensForField typName typArgs mutArgs cons (fldName,fldTyp)
                 let Just bindInd = fieldIndex fldName con
                     bindRight
                       = ConE 'Right
-                          `AppE` TupE [ VarE (vars !! bindInd)
-                                      , LamE [VarP setVar]
+                          `AppE` TupE [ Just $ VarE (vars !! bindInd)
+                                      , Just $ LamE [VarP setVar]
                                              (funApplication & element (bindInd+1)
                                                  .= VarE setVar $ rebuild)
                                       ]
@@ -149,7 +149,7 @@ referenceType :: Type -> Name -> [Name] -> [Name] -> Type -> Q Type
 referenceType refType name args mutArgs fldTyp
   = do (fldTyp',mapping) <- makePoly mutArgs fldTyp
        let args' = traversal .- (\a -> fromMaybe a (mapping ^? element a)) $ args
-       return $ ForallT (map PlainTV (sort (nub (M.elems mapping ++ args)))) []
+       return $ ForallVisT (map (\n -> PlainTV n ()) (sort (nub (M.elems mapping ++ args))))
                         (refType `AppT` addTypeArgs name args
                                  `AppT` addTypeArgs name args'
                                  `AppT` fldTyp
@@ -194,7 +194,7 @@ bindAndRebuild con
   = do let name = con ^. conName
            fields = con ^. conFields
        bindVars <- replicateM (length fields) (newName "fld")
-       return ( ConP name (map VarP bindVars)
+       return ( ConP name [] (map VarP bindVars)
               , (ConE name : map VarE bindVars) ^. turn funApplication
               , bindVars
               )

@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE LambdaCase, TypeOperators, BangPatterns #-}
+{-# LANGUAGE LambdaCase, TypeOperators, BangPatterns, LiberalTypeSynonyms #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, MultiParamTypeClasses, RankNTypes #-}
 
 -- | A collection of random example references
