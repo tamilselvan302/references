@@ -39,7 +39,7 @@ genClass i
              t <- newName "t"
              a <- newName "a"
              b <- newName "b1"
-             let tvars = map PlainTV [s,t,a,b]
+             let tvars = map (\v -> PlainTV v ()) [s, t, a, b]
              return $ ClassD [] (lensClass i) tvars
                              [ FunDep [s] [a], FunDep [t] [b]
                              , FunDep [a,t] [s], FunDep [b,s] [t]]
