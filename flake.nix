@@ -12,7 +12,7 @@
       perSystem = { self', pkgs, ... }: {
 
         haskellProjects.default = {
-          basePackages = pkgs.haskell.packages.ghc927;
+          basePackages = pkgs.haskell.packages.ghc92;
         };
 
         packages.default = self'.packages.references;
