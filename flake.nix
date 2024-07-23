@@ -10,8 +10,8 @@
       imports = [ inputs.haskell-flake.flakeModule ];
 
       perSystem = { self', pkgs, ... }: {
-
         haskellProjects.default = {
+          projectFlakeName = "classyplate";
           basePackages = pkgs.haskell.packages.ghc92;
         };
 

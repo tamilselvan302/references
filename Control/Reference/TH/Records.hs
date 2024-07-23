@@ -57,7 +57,7 @@ import Control.Reference.TupleInstances
 
 -- | Shows the generated declarations instead of using them.
 debugTH :: Q [Dec] -> Q [Dec]
-debugTH d = d >>= runIO . putStrLn . pprint >> return []
+debugTH d = d >>= runIO . putStrLn . pprint >> d
 
 -- | Creates references for fields of a data structure.
 makeReferences :: Name -> Q [Dec]
@@ -149,7 +149,7 @@ referenceType :: Type -> Name -> [Name] -> [Name] -> Type -> Q Type
 referenceType refType name args mutArgs fldTyp
   = do (fldTyp',mapping) <- makePoly mutArgs fldTyp
        let args' = traversal .- (\a -> fromMaybe a (mapping ^? element a)) $ args
-       return $ ForallVisT (map (\n -> PlainTV n ()) (sort (nub (M.elems mapping ++ args))))
+       return $ ForallVisT mempty-- (map (\n -> PlainTV n ()) (sort (nub (M.elems mapping ++ args))))
                         (refType `AppT` addTypeArgs name args
                                  `AppT` addTypeArgs name args'
                                  `AppT` fldTyp
