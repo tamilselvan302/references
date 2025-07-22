@@ -78,8 +78,8 @@ test-suite lens-creation
                 , containers
                 , either
                 , template-haskell >= 2.18.0.0
-                , ghc-boot >= 9.2.8
-                , ghc-boot-th >= 9.2.8
+                , ghc-boot >= 9.2
+                , ghc-boot-th >= 9.2
                 , instance-control
                 , directory
                 , filepath

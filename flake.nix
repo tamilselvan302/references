@@ -12,7 +12,7 @@
       perSystem = { self', pkgs, ... }: {
         haskellProjects.default = {
           projectFlakeName = "classyplate";
-          basePackages = pkgs.haskell.packages.ghc92;
+          basePackages = pkgs.haskell.packages.ghc924;
         };
 
         packages.default = self'.packages.references;
